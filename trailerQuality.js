@@ -66,9 +66,9 @@ function inspectYouTubeQuality(ytId) {
 }
 
 function languageTier(candidate) {
-    // Respect the existing language scoring: dubbed > localized > subtitled >
-    // unknown. API bonuses can increase score without changing this ordering.
-    const score = Number(candidate.score) || 0;
+    // Keep the original title/TMDB language tier separate from any API bonus.
+    // An API bonus must not classify a subtitled trailer as dubbed.
+    const score = Number(candidate.languageScore ?? candidate.score) || 0;
     if (score >= 4) return 4;
     if (score >= 3) return 3;
     if (score >= 2) return 2;
