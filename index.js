@@ -71,6 +71,13 @@ const manifest = {
             title: 'Strict Trailer Language (Disable English Fallback)'
         },
         {
+            key: 'preferredQuality',
+            type: 'select',
+            title: 'Preferred Trailer Upload Quality',
+            options: ['auto', '2160', '1080', '720'],
+            default: 'auto'
+        },
+        {
             key: 'playerTarget',
             type: 'select',
             title: 'Player Target / Modalità Riproduzione',
@@ -117,6 +124,7 @@ builder.defineStreamHandler(async ({ type, id, config }) => {
         const safeConfig = {
             language: config?.language,
             strictLanguage: config?.strictLanguage,
+            preferredQuality: config?.preferredQuality,
             playerTarget: config?.playerTarget,
             showRecap: config?.showRecap,
             onlyRecaps: config?.onlyRecaps,
@@ -228,7 +236,8 @@ builder.defineStreamHandler(async ({ type, id, config }) => {
                 useExternalLink,
                 playerTarget,
                 strictLanguage,
-                config?.youtubeApiKey || ''
+                config?.youtubeApiKey || '',
+                config?.preferredQuality || 'auto'
             );
 
             // Get recap streams for TV series if enabled
