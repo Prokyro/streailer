@@ -98,7 +98,12 @@ function choosePreferredCandidate(candidates, preference) {
     return ranked[0].candidate;
 }
 
+function clearQualityCache() {
+    cache.clear();
+}
+
 module.exports = {
     normalizePreferredQuality, maxVideoHeight,
-    inspectYouTubeQuality, choosePreferredCandidate, languageTier
+    inspectYouTubeQuality, choosePreferredCandidate, languageTier,
+    clearQualityCache
 };
