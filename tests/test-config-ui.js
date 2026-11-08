@@ -9,7 +9,7 @@ assert.ok(match, 'configuration JavaScript must exist');
 
 function createPage(pathname = '/configure') {
     const names = [
-        'languageSelect', 'strictLanguageToggle', 'youtubeApiKeyInput',
+        'languageSelect', 'strictLanguageToggle', 'qualitySelect', 'youtubeApiKeyInput',
         'youtubeApiKeyVisibility', 'youtubeApiKeyHelp', 'youtubeApiKeyWarning',
         'playerSelect', 'playerLabel', 'playerDescription', 'externalLinkToggle',
         'recapToggle', 'onlyRecapsToggle', 'installBtn', 'copyBtn',
@@ -28,6 +28,7 @@ function createPage(pathname = '/configure') {
     elements.languageSelect.value = 'en-US';
     elements.languageSelect.options = [{ value: 'en-US' }, { value: 'pt-BR' }];
     elements.playerSelect.value = 'internal';
+    elements.qualitySelect.value = 'auto';
     const copied = [];
     const location = {
         pathname, host: 'streailer.test.example', origin: 'https://streailer.test.example',
@@ -80,6 +81,21 @@ async function run() {
         assert.strictEqual(cfg.youtubeApiKey, undefined);
         assert.strictEqual(cfg.language, 'pt-BR');
         assert.strictEqual(cfg.playerTarget, 'internal');
+        assert.strictEqual(cfg.preferredQuality, 'auto');
+    });
+
+    await test('quality selector stores the preferred upload resolution', () => {
+        assert.match(html, /<select id="qualitySelect"/);
+        const page = createPage();
+        page.elements.qualitySelect.value = '2160';
+        const cfg = JSON.parse(decodeURIComponent(vm.runInContext('getConfig()', page.sandbox)));
+        assert.strictEqual(cfg.preferredQuality, '2160');
+    });
+
+    await test('quality selector restores an existing 1080p preference', () => {
+        const previous = encodeURIComponent(JSON.stringify({ language: 'pt-BR', preferredQuality: '1080' }));
+        const page = createPage('/' + previous + '/configure');
+        assert.strictEqual(page.elements.qualitySelect.value, '1080');
     });
 
     await test('entered key is included only in generated user config', () => {

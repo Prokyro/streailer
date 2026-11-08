@@ -96,6 +96,45 @@ playing unrelated episodes as recaps, including numbered items such as
 `EP01`, `E01`, `S01E01`, and `1x01`, although some valid long or atypically
 named videos may be omitted.
 
+### Preferred trailer upload quality (metadata only)
+
+The custom configuration page offers **Automatic**, **4K (2160p)**,
+**Full HD (1080p)** and **HD (720p)** under "Qualidade preferida do trailer".
+A configured value is passed in the Stremio installation URL as
+`preferredQuality=auto|2160|1080|720` (the structured configuration uses
+the same `preferredQuality` key).
+
+- **Automatic** is the default. Existing addon installations keep their
+  original behavior and do not run extra quality probes.
+- Other settings consult up to five already-validated trailer candidates per
+  source using **yt-dlp metadata only** (`--skip-download --dump-single-json`).
+  No trailer file is downloaded or kept by Streailer.
+- The existing language rank is always applied first. A likely PT-BR dubbed
+  upload is not replaced by a likely subtitled or unknown-language upload just
+  to achieve a higher resolution.
+- For PT-BR, an additional YouTube search may upgrade a TMDB-selected trailer
+  when the preferred resolution was not verified.
+- Missing formats, bot challenges, timeouts or a missing yt-dlp binary fall
+  back to existing trailer selection without failing the request.
+- Resolutions are cached for six hours (failed inspections for 15 minutes).
+  Each inspection has an 8.5-second timeout, and at most four yt-dlp
+  processes run concurrently.
+
+**Important:** The selected quality is the *maximum resolution reported for
+the YouTube upload*, not a playback setting. Streailer still returns a `ytId`
+or external YouTube URL. The Stremio, YouTube or SmartTube player controls
+actual video quality. Title/metadata hints do not guarantee that the spoken
+audio is Brazilian Portuguese.
+
+The Docker image installs `yt-dlp` using Alpine's package repository,
+including ARM64 images. A manually deployed Node instance must make the
+`yt-dlp` executable available on PATH.
+
+For users consuming this addon through AIOMetadata, the default trailer addon
+timeout of 6000 ms may be insufficient on a cold metadata lookup; consider
+increasing `TRAILER_ADDON_TIMEOUT_MS` after measuring the real response time.
+Avoid relying on a 4K selection when the client cannot play YouTube 4K.
+
 ### Optional YouTube Data API verification
 
 Set `YOUTUBE_API_KEY` in the **server container environment** (recommended)
