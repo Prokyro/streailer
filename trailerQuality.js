@@ -10,6 +10,8 @@ const ERROR_TTL_MS = 15 * 60 * 1000;
 const MAX_CACHE = 500;
 const cache = new Map();
 const inflight = new Map();
+const MAX_ACTIVE_PROBES = 4;
+let activeProbes = 0;
 const VIDEO_ID = /^[a-zA-Z0-9_-]{11}$/;
 
 function normalizePreferredQuality(value) {
@@ -33,6 +35,9 @@ function inspectYouTubeQuality(ytId) {
     const existing = cache.get(ytId);
     if (existing && existing.expiresAt > Date.now()) return Promise.resolve(existing.height);
     if (inflight.has(ytId)) return inflight.get(ytId);
+    // Global bound: preserve server responsiveness during concurrent requests.
+    if (activeProbes >= MAX_ACTIVE_PROBES) return Promise.resolve(null);
+    activeProbes++;
 
     const url = 'https://www.youtube.com/watch?v=' + ytId;
     const pending = new Promise(resolve => {
@@ -53,6 +58,7 @@ function inspectYouTubeQuality(ytId) {
         });
         if (cache.size > MAX_CACHE) cache.delete(cache.keys().next().value);
         inflight.delete(ytId);
+        activeProbes = Math.max(0, activeProbes - 1);
         return height;
     });
     inflight.set(ytId, pending);
