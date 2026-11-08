@@ -50,6 +50,14 @@ async function run() {
             choosePreferredCandidate([boostedSubtitled4k, dubbedFhd], '2160'),
             dubbedFhd,
         );
+        const verifiedSpokenPtBr = {
+            score: 6, languageScore: 0, spokenAudioConfirmed: true,
+            qualityHeight: 1080
+        };
+        assert.strictEqual(
+            choosePreferredCandidate([subtitled4k, verifiedSpokenPtBr], '2160'),
+            verifiedSpokenPtBr,
+        );
         assert.strictEqual(choosePreferredCandidate([dubbedFhd, dubbed4k], 'auto'), dubbedFhd);
 
         assert.strictEqual(await inspectYouTubeQuality('not-an-id'), null);
