@@ -775,6 +775,21 @@
                     </span>
                 </div>
 
+                <div class="form-group full-width">
+                    <label class="form-label" for="qualitySelect">🎞️ Qualidade preferida do trailer</label>
+                    <div class="select-wrapper">
+                        <select id="qualitySelect" aria-describedby="qualityDescription">
+                            <option value="auto">Automática (sem verificação adicional)</option>
+                            <option value="2160">4K (2160p)</option>
+                            <option value="1080">Full HD (1080p)</option>
+                            <option value="720">HD (720p)</option>
+                        </select>
+                    </div>
+                    <span id="qualityDescription" class="toggle-description" style="margin-top: 6px; display: block;">
+                        Prioriza vídeos com a resolução disponível, sem baixar arquivos. A qualidade reproduzida depende do player.
+                    </span>
+                </div>
+
                 <div class="form-group">
                     <label class="form-label" for="strictLanguageToggle">Strict Trailer Language</label>
                     <div class="toggle-container">
@@ -893,6 +908,7 @@
     <script>
         const languageSelect = document.getElementById('languageSelect');
         const strictLanguageToggle = document.getElementById('strictLanguageToggle');
+        const qualitySelect = document.getElementById('qualitySelect');
         const youtubeApiKeyInput = document.getElementById('youtubeApiKeyInput');
         const youtubeApiKeyVisibility = document.getElementById('youtubeApiKeyVisibility');
         const youtubeApiKeyHelp = document.getElementById('youtubeApiKeyHelp');
@@ -1107,6 +1123,7 @@
                         const [k, v] = p.split('=');
                         if (k === 'lang' || k === 'language') cfg.language = v;
                         else if (k === 'strictLanguage') cfg.strictLanguage = (v === 'true');
+                        else if (k === 'preferredQuality') cfg.preferredQuality = v;
                         else if (k === 'youtubeApiKey') cfg.youtubeApiKey = decodeURIComponent(v || '');
                         else if (k === 'external' || k === 'externalLink') cfg.externalLink = (v === 'true');
                         else if (k === 'recap' || k === 'showRecap') cfg.showRecap = (v === 'true');
@@ -1117,6 +1134,7 @@
                 if (cfg) {
                     if (cfg.language) languageSelect.value = cfg.language;
                     strictLanguageToggle.checked = cfg.strictLanguage === true || cfg.strictLanguage === 'true';
+                    if (['auto', '2160', '1080', '720'].includes(String(cfg.preferredQuality))) qualitySelect.value = String(cfg.preferredQuality);
                     if (typeof cfg.youtubeApiKey === 'string') youtubeApiKeyInput.value = cfg.youtubeApiKey;
                     if (cfg.playerTarget) {
                         playerSelect.value = cfg.playerTarget;
@@ -1141,6 +1159,7 @@
             const configObj = {
                 language: lang,
                 strictLanguage: strictLanguageToggle.checked,
+                preferredQuality: qualitySelect.value,
                 playerTarget: player,
                 externalLink: external,
                 showRecap: recap,
