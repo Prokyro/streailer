@@ -43,6 +43,13 @@ async function run() {
         assert.strictEqual(choosePreferredCandidate([dubbed4k, dubbedFhd], '1080'), dubbedFhd);
         assert.strictEqual(choosePreferredCandidate([subtitled4k, dubbedFhd], '2160'), dubbedFhd);
         assert.strictEqual(choosePreferredCandidate([dubbedFhd, unknown4k], '2160'), dubbedFhd);
+        // Spoken-language metadata bonuses may strengthen a score but must not
+        // silently reclassify a subtitle-marked video as dubbed.
+        const boostedSubtitled4k = { score: 8, languageScore: 2, qualityHeight: 2160 };
+        assert.strictEqual(
+            choosePreferredCandidate([boostedSubtitled4k, dubbedFhd], '2160'),
+            dubbedFhd,
+        );
         assert.strictEqual(choosePreferredCandidate([dubbedFhd, dubbed4k], 'auto'), dubbedFhd);
 
         assert.strictEqual(await inspectYouTubeQuality('not-an-id'), null);
