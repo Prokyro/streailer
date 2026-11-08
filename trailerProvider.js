@@ -397,6 +397,7 @@ async function selectAvailableTrailer(candidates, language, availability, requir
         if (queried && isVideoExcluded(apiVideo, region, MAX_TRAILER_DURATION_SECONDS)) return null;
         return {
             ...candidate,
+            languageScore: candidate.score || 0,
             score: (candidate.score || 0) + audioLanguageBonus(apiVideo, language, candidate.score || 0),
             apiVideo,
             position
@@ -665,6 +666,7 @@ async function getTrailerStreams(type, imdbId, contentName, season, tmdbId, lang
                 title: type === 'series' && season ? `${contentTitle} ${t.season} ${season}` : contentTitle,
                 source: 'tmdb-lang',
                 score: tmdbLangTrailer.score,
+                languageScore: tmdbLangTrailer.languageScore,
                 qualityHeight: tmdbLangTrailer.qualityHeight || null
             };
         }
@@ -678,7 +680,7 @@ async function getTrailerStreams(type, imdbId, contentName, season, tmdbId, lang
             if (upgrade) {
                 const alternative = {
                     ytId: upgrade.ytId, title: upgrade.title, source: 'youtube',
-                    score: upgrade.score, qualityHeight: upgrade.qualityHeight || null
+                    score: upgrade.score, languageScore: upgrade.languageScore, qualityHeight: upgrade.qualityHeight || null
                 };
                 if (choosePreferredCandidate([trailerResult, alternative], preferredQuality) === alternative) {
                     trailerResult = alternative;
@@ -706,8 +708,9 @@ async function getTrailerStreams(type, imdbId, contentName, season, tmdbId, lang
                         ytId: ytResult.ytId,
                         title: ytResult.title,
                         source: 'youtube',
-                    score: ytResult.score,
-                    qualityHeight: ytResult.qualityHeight || null
+                        score: ytResult.score,
+                        languageScore: ytResult.languageScore,
+                        qualityHeight: ytResult.qualityHeight || null
                     };
                 }
             }
