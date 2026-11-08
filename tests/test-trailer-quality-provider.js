@@ -23,6 +23,7 @@ childProcess.execFile = (command, args, options, callback) => {
     return { kill() {} };
 };
 const { getTrailerStreams } = require('../trailerProvider');
+const { clearQualityCache } = require('../trailerQuality');
 
 const VIDEO_4K = 'fourk000001';
 const tmdb = (id, name = 'Primetime (2026) Trailer Dublado') => ({
@@ -36,6 +37,7 @@ const get = (preferredQuality = 'auto') =>
 let passed = 0;
 async function test(name, setup, check) {
     reset();
+    clearQualityCache();
     heights.clear();
     invocations.length = 0;
     failProbes = false;
