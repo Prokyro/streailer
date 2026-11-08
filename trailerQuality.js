@@ -66,8 +66,9 @@ function inspectYouTubeQuality(ytId) {
 }
 
 function languageTier(candidate) {
-    // Keep the original title/TMDB language tier separate from any API bonus.
-    // An API bonus must not classify a subtitled trailer as dubbed.
+    // An explicitly verified spoken-audio locale outranks title-only guesses.
+    // Otherwise use the original title/TMDB score, not the inflated API score.
+    if (candidate.spokenAudioConfirmed === true) return 5;
     const score = Number(candidate.languageScore ?? candidate.score) || 0;
     if (score >= 4) return 4;
     if (score >= 3) return 3;
